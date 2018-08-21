@@ -120,18 +120,31 @@ Class Stages
 
     Stages
 
+    Preparation
+    1. Owner Assigns Teacher - SetTeacher() Done
+    2. Teacher set Course Info / Course Fee - SetClassName(), SetTuitionFee() Done
+    3. Teacher Upload Hashes of documents on IPFS
+
     Registration
-    1. Student Register for class by paying eth for class fee - Done
-    2. Teacher can close registration or if max students reached - Done
+    1. Student Register for class by paying eth for class fee -RegisterTuition() Done
+    2. Teacher can close registration or if max students reached -CloseRegistration() Done
 
 
-    Ongoing
-    1. Students can upload submission to IPFS
+    Started
+    1. 
+    2. Students can view hashes of documents on IPFS
 
     Ended
-    1. Teacher assigns grade to student - Done
-    2. Teacher can collect tuition fee - Done
+    1. Teacher assigns grade to student -recordGrade() Done
+    2. Teacher can collect tuition fee -withdrawFees() Done
 
     Review
-    1. Students vote on teacher performance
-    2. Teacher can withdraw bonus performance funds
+    1. Students vote on teacher performance upon 5 Stars
+    2. Teacher can withdraw bonus performance funds //if got time
+
+
+
+    Name Registry Design pattern for Storing of Tuition
+
+    Circuit breaker / Emergency Stop
+    Class cancelled - > Teacher stops class, can refund for students

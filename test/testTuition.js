@@ -1,17 +1,18 @@
-var Tuition = artifacts.require("./Tuition.sol");
+// test/tuitionTest.js
+const Tuition = artifacts.require("Tuition");
 
-contract('Tuition', function(accounts) {
+contract("Tuition", accounts => {
+  const [firstAccount,teacherAccount] = accounts;
 
-  it("...should store the value 89.", function() {
-    return SimpleStorage.deployed().then(function(instance) {
-      simpleStorageInstance = instance;
-
-      return simpleStorageInstance.set(89, {from: accounts[0]});
-    }).then(function() {
-      return simpleStorageInstance.get.call();
-    }).then(function(ipfsHash) {
-      assert.equal(ipfsHash, 89, "The value 89 was not stored.");
-    });
+  it("sets an owner", async () => {
+    const tuition = await Tuition.new();
+    assert.equal(await tuition.owner.call(), firstAccount);
   });
+
+ 
+
+
+
+
 
 });

@@ -51,6 +51,7 @@
   "dependencies": {
     "dotenv": "^2.0.0",
     "ipfs-api": "^23.0.0",
+    "openzeppelin-solidity": "1.12.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
@@ -98,5 +99,13 @@
   },
   "eslintConfig": {
     "extends": "react-app"
-  }
+  },
+  "description": "●  \tA project README.md that explains your project ○  \tWhat does your project do? ○  \tHow to set it up ■  \tRun a local development server",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
