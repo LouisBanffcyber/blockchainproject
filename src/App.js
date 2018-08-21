@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import SimpleStorageContract from '../build/contracts/SimpleStorage.json'
+import TuitionContract from '../build/contracts/Tuition.json'
 import getWeb3 from './utils/getWeb3'
 import ipfs from './ipfs'
 
@@ -7,6 +8,8 @@ import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
+
+
 
 class App extends Component {
   constructor(props) {
@@ -16,12 +19,16 @@ class App extends Component {
       ipfsHash : "",
       web3: null,
       buffer:null,
-      account: null
+      account: null,
+      ownerAddr:null,
+      contractStage:null,
+      blockNumber: web3.eth.blockNumber
     }
     this.captureFile = this.captureFile.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
   }
+ 
 
   componentWillMount() {
     // Get network provider and web3 instance.
@@ -48,27 +55,27 @@ class App extends Component {
      * Normally these functions would be called in the context of a
      * state management library, but for convenience I've placed them here.
      */
-
     const contract = require('truffle-contract')
-    const simpleStorage = contract(SimpleStorageContract)
-    simpleStorage.setProvider(this.state.web3.currentProvider)
-
-  
+   
+    const tuition = contract(TuitionContract)
+    tuition.setProvider(this.state.web3.currentProvider)
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
-      simpleStorage.deployed().then((instance) => {
-        this.simpleStorageInstance = instance
-        this.setState({ account: accounts[0] })
-
+      tuition.deployed().then((instance) => {
+        this.tuitionInstance = instance
         // Get the value from the contract to prove it worked.
-        return this.simpleStorageInstance.get.call(accounts[0])
-      }).then((ipfsHash) => {
+        return this.tuitionInstance.owner.call()
+      }).then((result) => {
         // Update state with the result.
-        return this.setState({ipfsHash})
+        console.log(result)
+        return this.setState({ownerAddr:result})
       })
     })
+
   }
+
+
 
 captureFile(event){
   event.preventDefault()
@@ -109,11 +116,14 @@ onSubmit(event) {
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
-              <h1>Upload Image</h1>
-              <p>This image is stored on IPFS and the Ethereum Rinkeby Test Net</p>
-              <img src={`https://ipfs.io/ipfs/${this.state.ipfsHash}`} alt=""/>
-           
-              <h2>Upload Here</h2>
+              <h1>Tuition Contract</h1>
+              <p>The owner of this contract is:{this.state.ownerAddr}</p>
+            
+              <h2>Contract Stage</h2>
+              <p>The stage of this contract is:{this.state.contractStage}</p>
+            
+
+
               <form onSubmit={this.onSubmit} >
 
                 <input type='file' onChange={this.captureFile}/>
