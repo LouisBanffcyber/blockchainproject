@@ -6,7 +6,10 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 contract Tuition {
 using SafeMath for uint256;
 
-    //Stages of tuition
+    /*
+    State Machine Design for Tuition Contract
+    Stages of tuition
+    */
     enum Stages {
         Preparation,
         Registration,
@@ -15,10 +18,8 @@ using SafeMath for uint256;
         Review
     }
 
-    //This is the current stage
+    //Initialize Preparation Stage
     Stages public stage = Stages.Preparation;
-
-    uint public creationTime = now;
 
     modifier atStage(Stages _stage) {
         require(stage == _stage);
@@ -37,18 +38,26 @@ using SafeMath for uint256;
         nextStage();
     }
 
+    function setStageToRegistration() internal atStage(Stages.Preparation) transitionNext{
+        
+    }
 
-    //Address of the teacher
-    address public teacher;
-    address public owner;
-    string public className;
+    function setStageToStarted() internal atStage(Stages.Registration) transitionNext{
 
-    uint256 public studentCount;
-    uint256 public maxStudents = 2;
-    uint256 public tuitionFee;
-    uint256 public feeCollected;
-    uint256 result;
-    address[] public students;
+    }
+
+    function setStageToEnded()  internal atStage(Stages.Started) transitionNext{
+
+    }
+
+    function setStageToReview()  internal atStage(Stages.Ended) transitionNext{
+
+    }
+
+
+    /*
+    Circuit Breaker Design for Tuition Contract
+    */
     bool isStopped = false;
     
     modifier notStopped {
@@ -76,24 +85,36 @@ using SafeMath for uint256;
     }
     
     function emergencyWithdraw() public onlyWhenStopped returns(bool) {
-        // Emergency withdraw happening here
-        //Only Students who registered can withdraw
-        //Student can only withdraw 
-        
-        //student have not withdraw
+        /*Emergency withdraw happening here
+          Only Students who registered can withdraw
+          Student can only withdraw once
+        */
         if(studentInfo[msg.sender].refunded != true){
             studentInfo[msg.sender].refunded = true;
             feeCollected = SafeMinus(feeCollected,tuitionFee);
             msg.sender.transfer(tuitionFee);
             return true;
-                
         }
         return false;
-        
-        
     }
-    
 
+
+    /*
+    Declartion of variables used in contract
+    */
+
+    uint public creationTime = now;
+    address public teacher;
+    address public owner;
+    string public className;
+
+    uint256 public studentCount;
+    uint256 public maxStudents = 2;
+    uint256 public tuitionFee;
+    uint256 public feeCollected;
+    uint256 result;
+    address[] public students;
+    
 
     struct Student {
         string studentName;
@@ -101,6 +122,9 @@ using SafeMath for uint256;
         uint256 grade;
         bool refunded;
     }
+    //The address of the student map to the structure
+    mapping(address => Student) public studentInfo;
+
     //Constructor 
     function Tuition() public{
         owner = msg.sender;
@@ -129,7 +153,7 @@ using SafeMath for uint256;
          setStageToRegistration();
     }
     function endClass() public onlyTeacher atStage(Stages.Started){
-        setStageToStarted();
+        setStageToEnded();
     }
     
     function reviewClass() public onlyTeacher atStage(Stages.Ended){
@@ -157,8 +181,7 @@ using SafeMath for uint256;
       return result;
     }
 
-    //The address of the student map to the structure
-    mapping(address => Student) public studentInfo;
+    
 
     modifier onlyTeacher{
         require(msg.sender == teacher, "Only Teacher");
@@ -235,24 +258,7 @@ using SafeMath for uint256;
 
     }
 
-    function setStageToRegistration() internal atStage(Stages.Preparation) transitionNext{
-        
-    }
-
-    function setStageToStarted() internal atStage(Stages.Registration) transitionNext{
-
-    }
-
-    function setStageToEnded()  internal atStage(Stages.Started) transitionNext{
-
-    }
-
-    function setStageToReview()  internal atStage(Stages.Ended) transitionNext{
-
-    }
-
-
-
+  
 
 
 
