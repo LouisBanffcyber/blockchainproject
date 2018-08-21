@@ -148,3 +148,5 @@ Class Stages
 
     Circuit breaker / Emergency Stop
     Class cancelled - > Teacher stops class, can refund for students
+
+    Added some change here for test
