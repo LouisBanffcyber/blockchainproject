@@ -58,6 +58,18 @@ contract("Tuition Contract", async(accounts) => {
     assert.equal(await tuitionInstance.checkStudentExists(student1),true,"Student 1 should be registered");
 
   });
+  it("Register Tuition for Student2 with less than tuition fee - will fail to register", async() =>{
+    let tuitionInstance = await Tuition.deployed();
+    try{
+      await tuitionInstance.registerTuition("Studentwo",{value: 1e+18 ,from: student2});
+      assert.fail();
+    }
+    catch (err){
+      assert.ok(/revert/.test(err.message));
+
+    }
+
+  });
 
   it("Register Tuition for Student2", async() =>{
     let tuitionInstance = await Tuition.deployed();
@@ -92,6 +104,8 @@ contract("Tuition Contract", async(accounts) => {
     assert.equal(await tuitionInstance.getBalance.call(),4e+18,"getBalance should be 4 Eth");      
   });
 
+
+
   it("Teacher sets stage to ended", async() => {
     let tuitionInstance = await Tuition.deployed();
     await tuitionInstance.endClass({from: teacher});
@@ -99,12 +113,89 @@ contract("Tuition Contract", async(accounts) => {
 
   });
 
+  it("Emergency Stop by Owner", async() =>{
+    let tuitionInstance = await Tuition.deployed();
+    await tuitionInstance.stopContract({from: owner});
+    assert.equal(await tuitionInstance.isStopped.call(),true,"Contract should be stopped");
+  });
+
+  it("Teacher assigns grade to studentOne but will fail as Contract is stopped", async() => {
+    try{
+      let tuitionInstance = await Tuition.deployed();
+      await tuitionInstance.recordGrade(student1,75,{from: teacher});
+      let studentOneInfo = await tuitionInstance.studentInfo(student1);
+      assert.equal(studentOneInfo[2],75,"Student1 grade should be 75");
+    }catch (err){
+      assert.ok(/revert/.test(err.message));
+
+    }
+    
+  });
+
+  it("Emergency withdraw by studenttwo", async() =>{
+    let tuitionInstance = await Tuition.deployed();
+    await tuitionInstance.emergencyWithdraw({from: student2})
+    assert.equal(await tuitionInstance.feeCollected.call(),2e+18,"Fee collected should be 2");
+
+  });
+  it("Emergency withdraw by studenttwo second time which will fail", async() =>{
+    try{
+      let tuitionInstance = await Tuition.deployed();
+      await tuitionInstance.emergencyWithdraw({from: student2})
+      assert.equal(await tuitionInstance.feeCollected.call(),2e+18,"Fee collected should be 2");
+    } catch (err){
+      assert.ok(/revert/.test(err.message));
+
+    }
+    
+
+  });
+
+  it("Contract Resumed by Owner", async() =>{
+    let tuitionInstance = await Tuition.deployed();
+    await tuitionInstance.resumeContract({from: owner});
+    assert.equal(await tuitionInstance.isStopped.call(),false,"Contract should be resumed");
+  });
+
+
   it("Teacher assigns grade to studentOne", async() => {
     let tuitionInstance = await Tuition.deployed();
     await tuitionInstance.recordGrade(student1,75,{from: teacher});
     let studentOneInfo = await tuitionInstance.studentInfo(student1);
     assert.equal(studentOneInfo[2],75,"Student1 grade should be 75");
   });
+
+
+  it("Teacher sets stage to Review", async() => {
+    let tuitionInstance = await Tuition.deployed();
+    await tuitionInstance.reviewClass({from: teacher});
+    assert.equal(await tuitionInstance.stage.call(),4,"Stage should be at review");
+
+  });
+
+
+  it("Teacher withdraws FeeCollected", async() => {
+    let tuitionInstance = await Tuition.deployed();
+    let oldAmt = await web3.eth.getBalance(teacher).toNumber();
+    
+    await tuitionInstance.withdrawFees({from: teacher});
+    let newAmt = await web3.eth.getBalance(teacher).toNumber();
+    
+    assert.isAbove(newAmt,oldAmt,"Teacher account should have more ether");
+
+  });
+
+  it("student1 assign rating to teacher", async() => {
+    let tuitionInstance = await Tuition.deployed();
+    await tuitionInstance.giveTeacherRating(90,{from: student1});
+    let studentOneInfo = await tuitionInstance.studentInfo(student1);
+    assert.equal(studentOneInfo[1],90,"Student1 rating of teacher should be 90");
+  });
+
+  
+
+
+
 
 
 });

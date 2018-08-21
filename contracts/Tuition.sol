@@ -58,7 +58,7 @@ using SafeMath for uint256;
     /*
     Circuit Breaker Design for Tuition Contract
     */
-    bool isStopped = false;
+    bool public isStopped = false;
     
     modifier notStopped {
         require(!isStopped);
@@ -130,17 +130,17 @@ using SafeMath for uint256;
         owner = msg.sender;
     }
     
-    function setClassName(string _className) public onlyTeacher atStage(Stages.Preparation) {
+    function setClassName(string _className) public onlyTeacher notStopped atStage(Stages.Preparation) {
         className = _className;
         
     }
     
-    function setTeacher(address _teacher) public onlyAuthorized atStage(Stages.Preparation){
+    function setTeacher(address _teacher) public onlyAuthorized notStopped atStage(Stages.Preparation){
         teacher = _teacher;
         
     }
     
-    function setTuitionFee(uint256 _tuitionFee )public onlyTeacher atStage(Stages.Preparation) {
+    function setTuitionFee(uint256 _tuitionFee )public onlyTeacher notStopped atStage(Stages.Preparation) {
         if(_tuitionFee > 0) {
             tuitionFee = _tuitionFee;
         }else{
@@ -148,15 +148,15 @@ using SafeMath for uint256;
         }
     }
     
-    function publishClass() public onlyTeacher atStage(Stages.Preparation){
+    function publishClass() public onlyTeacher notStopped atStage(Stages.Preparation){
          require(tuitionFee > 0);
          setStageToRegistration();
     }
-    function endClass() public onlyTeacher atStage(Stages.Started){
+    function endClass() public onlyTeacher notStopped atStage(Stages.Started){
         setStageToEnded();
     }
     
-    function reviewClass() public onlyTeacher atStage(Stages.Ended){
+    function reviewClass() public onlyTeacher notStopped atStage(Stages.Ended){
         setStageToReview();
     }
     
@@ -227,17 +227,17 @@ using SafeMath for uint256;
         
     }
     
-    function closeRegistration() public onlyTeacher atStage(Stages.Registration){
+    function closeRegistration() public onlyTeacher notStopped atStage(Stages.Registration){
         setStageToStarted();
     }
     
-    function recordGrade(address studentAddress,uint256 _grade) public onlyTeacher atStage(Stages.Ended){
+    function recordGrade(address studentAddress,uint256 _grade) public onlyTeacher notStopped atStage(Stages.Ended){
         
         studentInfo[studentAddress].grade = _grade;
         
     }
     
-    function giveTeacherRating(uint256 rating) public atStage(Stages.Review) returns (bool) {
+    function giveTeacherRating(uint256 rating) public notStopped atStage(Stages.Review) returns (bool) {
         //msg.sender must be a student and have not refunded fees
          if(studentInfo[msg.sender].refunded == false){
              studentInfo[msg.sender].teacherRating =rating;
@@ -248,7 +248,7 @@ using SafeMath for uint256;
   
    
 
-    function withdawFees() public onlyTeacher notStopped atStage(Stages.Review){
+    function withdrawFees() public onlyTeacher notStopped atStage(Stages.Review){
         
         uint amount = feeCollected;
         // Remember to zero the pending refund before

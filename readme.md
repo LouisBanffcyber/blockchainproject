@@ -136,11 +136,12 @@ Class Stages
 
     Ended
     1. Teacher assigns grade to student -recordGrade() Done
-    2. Teacher can collect tuition fee -withdrawFees() Done
+    
 
     Review
     1. Students vote on teacher performance upon 5 Stars
-    2. Teacher can withdraw bonus performance funds //if got time
+    2. Teacher can collect tuition fee -withdrawFees() Done
+    3. Teacher can withdraw bonus performance funds //if got time
 
 
 
