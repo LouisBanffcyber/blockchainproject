@@ -14,8 +14,8 @@ contract TestTuition {
         Tuition tuition = Tuition(DeployedAddresses.Tuition());
         Assert.equal(tuition.owner(), msg.sender, "An owner is different than a deployer");
     }
-    
-   
-  }
 
+   
 }
+
+

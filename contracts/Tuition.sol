@@ -178,7 +178,7 @@ using SafeMath for uint256;
     function registerTuition(string _studentName) public payable notStopped atStage(Stages.Registration){
         require(studentCount<maxStudents);
         require(!checkStudentExists(msg.sender), "Student already registered");
-        require(msg.value >= tuitionFee, "Tuition Fee is 1 Ether");
+        require(msg.value >= tuitionFee, "Send value = to tuition fee");
         
         uint256 receivedAmt = msg.value;
         uint256 ethToReturn = SafeMinus(receivedAmt, tuitionFee);
