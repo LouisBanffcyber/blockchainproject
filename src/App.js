@@ -22,12 +22,14 @@ class App extends Component {
       account: null,
       ownerAddr:null,
       contractStage:null,
-      blockNumber: web3.eth.blockNumber
+      
     }
     this.captureFile = this.captureFile.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
   }
+
+
  
 
   componentWillMount() {
@@ -56,24 +58,45 @@ class App extends Component {
      * state management library, but for convenience I've placed them here.
      */
     const contract = require('truffle-contract')
-   
     const tuition = contract(TuitionContract)
     tuition.setProvider(this.state.web3.currentProvider)
+    
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
+      console.log(accounts)
+    })
+
+    //get contract owner
+    tuition.deployed().then((instance) => {
+      this.tuitionInstance = instance
+      // Get the value from the contract to prove it worked.
+      return this.tuitionInstance.owner.call()
+    }).then((result) => {
+      // Update state with the result.
+      console.log(result)
+      return this.setState({ownerAddr:result})
+    })
+
+    //Get contract stage
       tuition.deployed().then((instance) => {
         this.tuitionInstance = instance
         // Get the value from the contract to prove it worked.
-        return this.tuitionInstance.owner.call()
+        return this.tuitionInstance.stage.call()
       }).then((result) => {
         // Update state with the result.
-        console.log(result)
-        return this.setState({ownerAddr:result})
+        console.log(result.toNumber())
+        return this.setState({contractStage:result.toNumber()})
       })
-    })
+    
+
 
   }
+
+
+
+
+
 
 
 
@@ -121,7 +144,8 @@ onSubmit(event) {
             
               <h2>Contract Stage</h2>
               <p>The stage of this contract is:{this.state.contractStage}</p>
-            
+
+           
 
 
               <form onSubmit={this.onSubmit} >
@@ -130,9 +154,7 @@ onSubmit(event) {
                 <input type='submit' /> 
 
               </form>
-              <p>If your contracts compiled and migrated successfully, below will show a stored value of 5 (by default).</p>
-              <p>Try changing the value stored on <strong>line 59</strong> of App.js.</p>
-              <p>The stored value is: {this.state.storageValue}</p>
+             
             </div>
           </div>
         </main>

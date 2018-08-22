@@ -125,9 +125,13 @@ using SafeMath for uint256;
     //The address of the student map to the structure
     mapping(address => Student) public studentInfo;
 
+    event logSetTeacher(address teacherAddr);
+
+
     //Constructor 
     function Tuition() public{
         owner = msg.sender;
+        
     }
     
     function setClassName(string _className) public onlyTeacher notStopped atStage(Stages.Preparation) {
@@ -137,7 +141,7 @@ using SafeMath for uint256;
     
     function setTeacher(address _teacher) public onlyAuthorized notStopped atStage(Stages.Preparation){
         teacher = _teacher;
-        
+        emit logSetTeacher(teacher);
     }
     
     function setTuitionFee(uint256 _tuitionFee )public onlyTeacher notStopped atStage(Stages.Preparation) {
