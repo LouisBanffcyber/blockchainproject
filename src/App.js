@@ -19,13 +19,23 @@ class App extends Component {
       ipfsHash : "",
       web3: null,
       buffer:null,
-      account: null,
+      curAccount: null,
       ownerAddr:null,
       contractStage:null,
+      teacherAddr:null,
+      studentInfo:null,
+      contractStopped:false,
+      feeCollected:null,
+      tuitionFee:null,
+      text:"",
+      
       
     }
     this.captureFile = this.captureFile.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+
+    this.setTeacher = this.setTeacher.bind(this);
+    this.updateTeacherAddr = this.updateTeacherAddr.bind(this);
 
   }
 
@@ -64,7 +74,8 @@ class App extends Component {
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
-      console.log(accounts)
+      // console.log(accounts)
+      return this.setState({curAccount:accounts})
     })
 
     //get contract owner
@@ -74,7 +85,7 @@ class App extends Component {
       return this.tuitionInstance.owner.call()
     }).then((result) => {
       // Update state with the result.
-      console.log(result)
+      // console.log(result)
       return this.setState({ownerAddr:result})
     })
 
@@ -85,16 +96,55 @@ class App extends Component {
         return this.tuitionInstance.stage.call()
       }).then((result) => {
         // Update state with the result.
-        console.log(result.toNumber())
+        // console.log(result.toNumber())
         return this.setState({contractStage:result.toNumber()})
       })
+
+     //Get Teacher
+     tuition.deployed().then((instance) => {
+      this.tuitionInstance = instance
+      // Get the value from the contract to prove it worked.
+      return this.tuitionInstance.teacher.call()
+    }).then((result) => {
+      // Update state with the result.
+       console.log(result)
+      return this.setState({teacherAddr:result})
+    })
+    
     
 
 
   }
 
+ 
 
+setTeacher(event){
+  //Get Teacher
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+    console.log("setting teacher")
+  
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.setTeacher(this.state.text, {from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
 
+}
+
+updateTeacherAddr(event){
+  event.preventDefault()
+  this.setState({text : event.target.value})
+  
+  }
 
 
 
@@ -139,12 +189,46 @@ onSubmit(event) {
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
+
+              <h1>Current account</h1>
+              <p>The current account is:{this.state.curAccount}</p>
+
               <h1>Tuition Contract</h1>
               <p>The owner of this contract is:{this.state.ownerAddr}</p>
             
               <h2>Contract Stage</h2>
               <p>The stage of this contract is:{this.state.contractStage}</p>
 
+               <h2>Actions as contract owner</h2>
+               <p>Assign Teacher</p>
+
+               <form onSubmit={this.setTeacher} >
+              
+              <input type="text" placeholder="Enter Teacher Address" onChange={this.updateTeacherAddr} />
+            
+              <input type="submit" value="Submit" />
+              </form>
+               
+
+               <p>Emergency Contract Stop</p>
+               <p>Resume Contract</p>
+
+               <h2>Actions as Teacher for address: {this.state.teacherAddr}</h2>
+               <p>Set Class Name</p>
+               <p>Set Tuition Fee</p>
+               <p>Resume Contract</p>
+               <p>Publish Class</p>
+               <p>End Class</p>
+               <p>Grade student</p>
+               <p>Review Class</p>
+               <p>Withdraw Fee</p>
+
+               <h2>Actions as student</h2>
+               <p>Register Class</p>
+               <p>Emergency Withdraw Fee</p>
+               <p>Give Teacher Rating</p>
+
+           
            
 
 
