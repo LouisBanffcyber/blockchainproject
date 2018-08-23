@@ -25,8 +25,9 @@ class App extends Component {
       teacherAddr:null,
       studentInfo:null,
       contractStopped:false,
-      feeCollected:null,
       tuitionFee:null,
+      className:null,
+      feeCollected:null,
       text:"",
       
       
@@ -107,9 +108,33 @@ class App extends Component {
       return this.tuitionInstance.teacher.call()
     }).then((result) => {
       // Update state with the result.
-       console.log(result)
+       
       return this.setState({teacherAddr:result})
     })
+
+      //Get contractstopped
+      tuition.deployed().then((instance) => {
+        this.tuitionInstance = instance
+        // Get the value from the contract to prove it worked.
+        return this.tuitionInstance.isStopped.call()
+      }).then((result) => {
+        // Update state with the result
+         
+        return this.setState({contractStopped:String(result)})
+      })
+      
+       //Get class name
+       tuition.deployed().then((instance) => {
+        this.tuitionInstance = instance
+        // Get the value from the contract to prove it worked.
+        return this.tuitionInstance.className.call()
+      }).then((result) => {
+        // Update state with the result
+         console.log(result)
+      
+        return this.setState({className:String(result)})
+      })
+      
     
     
 
@@ -190,22 +215,23 @@ onSubmit(event) {
           <div className="pure-g">
             <div className="pure-u-1-1">
 
-              <h1>Current account</h1>
-              <p>The current account is:{this.state.curAccount}</p>
-
-              <h1>Tuition Contract</h1>
-              <p>The owner of this contract is:{this.state.ownerAddr}</p>
+              <h1>Current Account:{this.state.curAccount} </h1>
             
-              <h2>Contract Stage</h2>
-              <p>The stage of this contract is:{this.state.contractStage}</p>
-
-               <h2>Actions as contract owner</h2>
-               <p>Assign Teacher</p>
-
-               <form onSubmit={this.setTeacher} >
+              <h1>Tuition Contract State Variables</h1>
               
-              <input type="text" placeholder="Enter Teacher Address" onChange={this.updateTeacherAddr} />
-            
+              <h2>Contract Stage: {this.state.contractStage}</h2>
+              <p>Contract Stage Value corresponds to (0:Preparation, 1:Registration, 2:Started, 3:Ended, 4:Review</p>
+              <h2>Contract Stopped: {this.state.contractStopped} </h2>
+              <h2>Class Name: {this.state.className}</h2>
+              <h2>Tuition Fee: {this.state.tuitionfee}</h2>
+              <h2> Collected Fee: {this.state.feeCollected}</h2>
+
+
+
+              <h2>Actions as contract owner:{this.state.ownerAddr}</h2>
+               <p>Assign Teacher</p>
+               <form onSubmit={this.setTeacher} >
+              <input type="text" placeholder="Enter Teacher Address" onChange={this.updateTeacherAddr}/>
               <input type="submit" value="Submit" />
               </form>
                
