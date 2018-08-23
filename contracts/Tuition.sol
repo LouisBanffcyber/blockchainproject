@@ -203,7 +203,9 @@ using SafeMath for uint256;
     event registerStudent(address student);
     
     function registerTuition(string _studentName) public payable notStopped atStage(Stages.Registration){
-        require(studentCount<maxStudents);
+        require(msg.sender != teacher,"Teacher cannot be student");
+        require(msg.sender != owner,"Owner cannot be student");
+        require(studentCount<maxStudents,"Class has reached max students");
         require(!checkStudentExists(msg.sender), "Student already registered");
         require(msg.value >= tuitionFee, "Send value = to tuition fee");
         

@@ -32,12 +32,24 @@ class App extends Component {
       
       
     }
-    this.captureFile = this.captureFile.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-
-    this.setTeacher = this.setTeacher.bind(this);
-    this.updateTeacherAddr = this.updateTeacherAddr.bind(this);
-
+    this.captureFile = this.captureFile.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.setTeacher = this.setTeacher.bind(this)
+    this.updateTeacherAddr = this.updateTeacherAddr.bind(this)
+    this.stopContract = this.stopContract.bind(this)
+    this.resumeContract = this.resumeContract.bind(this)
+    this.setClassName = this.setClassName.bind(this)
+    this.updateClassName = this.updateClassName.bind(this)
+    this.setTuitionFee = this.setTuitionFee.bind(this)
+    this.updateTuitionFee = this.updateTuitionFee.bind(this)
+    this.publishClass = this.publishClass.bind(this)
+    this.endClass = this.endClass.bind(this)
+    this.reviewClass = this.reviewClass.bind(this)
+    this.registerTuition = this.registerTuition.bind(this)
+    this.updateStudentName = this.updateStudentName.bind(this)
+    this.giveTeacherRating = this.giveTeacherRating.bind(this)
+    this.updateTeacherRating = this.updateTeacherRating.bind(this)
+    this.withdrawFees = this.withdrawFees.bind(this)
   }
 
 
@@ -130,15 +142,48 @@ class App extends Component {
         return this.tuitionInstance.className.call()
       }).then((result) => {
         // Update state with the result
-         console.log(result)
+        
       
         return this.setState({className:String(result)})
       })
+
+       //Get tuition fee
+       tuition.deployed().then((instance) => {
+        this.tuitionInstance = instance
+        // Get the value from the contract to prove it worked.
+        return this.tuitionInstance.tuitionFee.call()
+      }).then((result) => {
+        // Update state with the result
+       
+        return this.setState({tuitionFee:result.toNumber()})
+      })
+
+       //Get fee collected
+       tuition.deployed().then((instance) => {
+        this.tuitionInstance = instance
+        // Get the value from the contract to prove it worked.
+        return this.tuitionInstance.feeCollected.call()
+      }).then((result) => {
+        // Update state with the result
+         
       
-    
-    
+        return this.setState({feeCollected:result.toNumber()})
+      })
 
-
+         //Get student Info
+         tuition.deployed().then((instance) => {
+          this.tuitionInstance = instance
+          // Get the value from the contract to prove it worked.
+          return this.tuitionInstance.studentInfo(this.state.web3.eth.accounts[0])
+        }).then((result) => {
+          // Update state with the result
+          console.log('getting student info')
+           console.log(result)
+        
+          return this.setState({studentInfo:result.toNumber()})
+        })
+      
+      
   }
 
  
@@ -152,8 +197,7 @@ setTeacher(event){
   
   tuition.deployed().then((instance) => {
     this.tuitionInstance = instance
-    console.log("setting teacher")
-  
+   
     // Get the value from the contract to prove it worked.
     return this.tuitionInstance.setTeacher(this.state.text, {from: this.state.web3.eth.accounts[0]})
   }).then((err,result) => {
@@ -161,17 +205,223 @@ setTeacher(event){
     window.location.reload();
     
   })
-  
-
 }
+
+setClassName(event){
+  //Get Teacher
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+   
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.setClassName(this.state.text, {from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+}
+
+setTuitionFee(event){
+  //Get Teacher
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+   
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.setTuitionFee(this.state.text, {from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+}
+
+registerTuition(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+    console.log("register student")
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.registerTuition(this.state.text,{value: this.state.tuitionFee,from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+}
+
+giveTeacherRating(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+    
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.giveTeacherRating(this.state.text,{from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+}
+
+
+
 
 updateTeacherAddr(event){
   event.preventDefault()
   this.setState({text : event.target.value})
-  
   }
 
+updateClassName(event){
+    event.preventDefault()
+    this.setState({text : event.target.value})
+}
 
+updateTuitionFee(event){
+    event.preventDefault()
+    this.setState({text : event.target.value*1e+18})
+      
+}
+updateStudentName(event){
+    event.preventDefault()
+    this.setState({text : event.target.value})
+        
+}    
+updateTeacherRating(event){
+  event.preventDefault()
+  this.setState({text : event.target.value})
+      
+}  
+
+stopContract(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.stopContract({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
+
+resumeContract(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.resumeContract({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
+
+publishClass(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.publishClass({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
+endClass(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.endClass({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
+
+reviewClass(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.reviewClass({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
+
+withdrawFees(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.withdrawFees({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
 
 
 
@@ -220,11 +470,12 @@ onSubmit(event) {
               <h1>Tuition Contract State Variables</h1>
               
               <h2>Contract Stage: {this.state.contractStage}</h2>
-              <p>Contract Stage Value corresponds to (0:Preparation, 1:Registration, 2:Started, 3:Ended, 4:Review</p>
+              <p>Contract Stage Value corresponds to (0:Preparation, 1:Registration, 2:Started, 3:Ended, 4:Review)</p>
               <h2>Contract Stopped: {this.state.contractStopped} </h2>
               <h2>Class Name: {this.state.className}</h2>
-              <h2>Tuition Fee: {this.state.tuitionfee}</h2>
-              <h2> Collected Fee: {this.state.feeCollected}</h2>
+              <h2>Tuition Fee: {this.state.tuitionFee/1e+18} eth</h2>
+              <h2> Collected Fee: {this.state.feeCollected/1e+18}</h2>
+              <h2> Student Info: </h2>
 
 
 
@@ -237,22 +488,67 @@ onSubmit(event) {
                
 
                <p>Emergency Contract Stop</p>
+               <form onSubmit={this.stopContract} >
+              
+              <input type="submit" value="Stop Contract" />
+              </form>
                <p>Resume Contract</p>
+               <form onSubmit={this.resumeContract} >
+              <input type="submit" value="Resume Contract" />
+              </form>
 
-               <h2>Actions as Teacher for address: {this.state.teacherAddr}</h2>
-               <p>Set Class Name</p>
-               <p>Set Tuition Fee</p>
-               <p>Resume Contract</p>
-               <p>Publish Class</p>
+              <h2>Actions as Teacher for address: {this.state.teacherAddr}</h2>
+              <p>Set Class Name</p>
+              <form onSubmit={this.setClassName} >
+              <input type="text" placeholder="Name of class" onChange={this.updateClassName}/>
+              <input type="submit" value="Submit" />
+              </form>
+               
+
+              <p>Set Tuition Fee in eth</p>
+
+              <form onSubmit={this.setTuitionFee} >
+              <input type="text" placeholder="Enter Tuition Fee > 0 eth" onChange={this.updateTuitionFee}/>
+              <input type="submit" value="Submit" />
+              </form>
+
+              <p>Publish Class</p>
+              <form onSubmit={this.publishClass} >
+              <input type="submit" value="Publish Class" />
+              </form>
+
+
                <p>End Class</p>
+               <form onSubmit={this.endClass} >
+              <input type="submit" value="End Class" />
+              </form>
+
                <p>Grade student</p>
                <p>Review Class</p>
+               <form onSubmit={this.reviewClass} >
+              <input type="submit" value="Review Class" />
+              </form>
+
                <p>Withdraw Fee</p>
+               <form onSubmit={this.withdrawFees} >
+              <input type="submit" value="Withdraw fees" />
+              </form>
 
                <h2>Actions as student</h2>
-               <p>Register Class</p>
+               <p>Register for Class</p>
+               
+              <form onSubmit={this.registerTuition} >
+              <input type="text" placeholder="Name of student" onChange={this.updateStudentName}/>
+              <input type="submit" value="Register" />
+              </form>
+               
                <p>Emergency Withdraw Fee</p>
+
                <p>Give Teacher Rating</p>
+               <form onSubmit={this.giveTeacherRating} >
+              <input type="text" placeholder="Give teacher rating" onChange={this.updateTeacherRating}/>
+              <input type="submit" value="Rate teacher" />
+              </form>
 
            
            
