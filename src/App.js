@@ -50,6 +50,7 @@ class App extends Component {
     this.giveTeacherRating = this.giveTeacherRating.bind(this)
     this.updateTeacherRating = this.updateTeacherRating.bind(this)
     this.withdrawFees = this.withdrawFees.bind(this)
+    this.emergencyWithdraw = this.emergencyWithdraw.bind(this)
   }
 
 
@@ -423,6 +424,25 @@ withdrawFees(event){
   
 }
 
+emergencyWithdraw(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+
+    // Get the value from the contract to prove it worked.
+    return this.tuitionInstance.emergencyWithdraw({from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    window.location.reload();
+    
+  })
+  
+}
+
 
 
 captureFile(event){
@@ -543,6 +563,10 @@ onSubmit(event) {
               </form>
                
                <p>Emergency Withdraw Fee</p>
+               <form onSubmit={this.emergencyWithdraw} >
+              <input type="submit" value="Emergency Withdraw" />
+              </form>
+               
 
                <p>Give Teacher Rating</p>
                <form onSubmit={this.giveTeacherRating} >

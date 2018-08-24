@@ -84,18 +84,17 @@ using SafeMath for uint256;
         isStopped = false;
     }
     
-    function emergencyWithdraw() public onlyWhenStopped returns(bool) {
+    function emergencyWithdraw() public onlyWhenStopped {
         /*Emergency withdraw happening here
           Only Students who registered can withdraw
           Student can only withdraw once
         */
-        if(studentInfo[msg.sender].refunded != true){
-            studentInfo[msg.sender].refunded = true;
-            feeCollected = SafeMinus(feeCollected,tuitionFee);
-            msg.sender.transfer(tuitionFee);
-            return true;
-        }
-        return false;
+        require(checkStudentExists(msg.sender), "Must be a student who registered");
+        require(studentInfo[msg.sender].refunded == false,"Refunded Already");
+        studentInfo[msg.sender].refunded = true;
+        feeCollected = SafeMinus(feeCollected,tuitionFee);
+        msg.sender.transfer(tuitionFee);
+     
     }
 
 
@@ -257,8 +256,6 @@ using SafeMath for uint256;
     function withdrawFees() public onlyTeacher notStopped atStage(Stages.Review){
         
         uint amount = feeCollected;
-        // Remember to zero the pending refund before
-        // sending to prevent re-entrancy attacks
         feeCollected = 0;
         msg.sender.transfer(amount);
 
