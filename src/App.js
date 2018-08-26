@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import SimpleStorageContract from '../build/contracts/SimpleStorage.json'
+
 import TuitionContract from '../build/contracts/Tuition.json'
 import getWeb3 from './utils/getWeb3'
 import ipfs from './ipfs'
@@ -254,7 +254,7 @@ registerTuition(event){
   
   tuition.deployed().then((instance) => {
     this.tuitionInstance = instance
-    console.log("register student")
+   
     // Get the value from the contract to prove it worked.
     return this.tuitionInstance.registerTuition(this.state.text,{value: this.state.tuitionFee,from: this.state.web3.eth.accounts[0]})
   }).then((err,result) => {
@@ -273,14 +273,40 @@ giveTeacherRating(event){
   tuition.deployed().then((instance) => {
     this.tuitionInstance = instance
     
-    // Get the value from the contract to prove it worked.
+    // Get the value from the contract to prove it worked
+    console.log(this.state.text)
     return this.tuitionInstance.giveTeacherRating(this.state.text,{from: this.state.web3.eth.accounts[0]})
   }).then((err,result) => {
     // Update state with the result.
+    console.log(result)
     window.location.reload();
     
   })
 }
+
+
+recordGrade(event){
+  event.preventDefault()
+  const contract = require('truffle-contract')
+  const tuition = contract(TuitionContract)
+  tuition.setProvider(this.state.web3.currentProvider)
+  
+  tuition.deployed().then((instance) => {
+    this.tuitionInstance = instance
+    
+    // Get the value from the contract to prove it worked
+    console.log(this.state.text)
+    return this.tuitionInstance.recordGrade(this.state.text,{from: this.state.web3.eth.accounts[0]})
+  }).then((err,result) => {
+    // Update state with the result.
+    console.log(result)
+    window.location.reload();
+    
+  })
+}
+
+
+
 
 
 
@@ -306,6 +332,13 @@ updateStudentName(event){
         
 }    
 updateTeacherRating(event){
+  event.preventDefault()
+  this.setState({text : event.target.value})
+      
+}  
+
+
+updateStudentGrade(event){
   event.preventDefault()
   this.setState({text : event.target.value})
       
@@ -495,7 +528,7 @@ onSubmit(event) {
               <h2>Class Name: {this.state.className}</h2>
               <h2>Tuition Fee: {this.state.tuitionFee/1e+18} eth</h2>
               <h2> Collected Fee: {this.state.feeCollected/1e+18}</h2>
-              <h2> Student Info: </h2>
+              
 
 
 
@@ -544,6 +577,15 @@ onSubmit(event) {
               </form>
 
                <p>Grade student</p>
+             
+               <form onSubmit={this.recordGrade} >
+              <input type="text" placeholder="student address,grade" onChange={this.updateStudentGrade}/>
+              <input type="submit" value="Record Grade" />
+              </form>
+
+           
+
+
                <p>Review Class</p>
                <form onSubmit={this.reviewClass} >
               <input type="submit" value="Review Class" />
@@ -575,15 +617,7 @@ onSubmit(event) {
               </form>
 
            
-           
-
-
-              <form onSubmit={this.onSubmit} >
-
-                <input type='file' onChange={this.captureFile}/>
-                <input type='submit' /> 
-
-              </form>
+       
              
             </div>
           </div>
