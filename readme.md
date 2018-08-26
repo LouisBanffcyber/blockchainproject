@@ -124,3 +124,15 @@ Login as account 3 and try registering as a student. When successfull, you shoul
 You should get the idea, login with different accounts and try the various functions. Do take note of the contract stage. Refer to the Tuition Contract Stages mentioned above to see what functions are available at each stage.
 
 *For the gradeStudent and giveTeacherRating functions are abit useless for now, I'm still figuring out how to display the studentInfo struct from the contract into react properly. But the test cases work! 
+
+For bonus points
+
+I have deployed my contract at
+
+https://rinkeby.etherscan.io/address/0x9eb75c08cb158fd291c422ff33fd43b28fd7a045
+
+You can interact with it using remix, follow the instructions on how to load the contract with remix
+https://medium.com/coinmonks/the-many-ways-to-deploy-your-smart-contract-to-rinkeby-network-38cadf7b20be
+
+You cant do much except register for class. I am both the owner and teacher in this contract.
+The tuition fee is 2eth and the class name is "solidity"
