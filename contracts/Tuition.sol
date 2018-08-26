@@ -3,6 +3,9 @@ pragma solidity ^0.4.18;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
+
+
+/** @title Tuition Contract. */
 contract Tuition {
 using SafeMath for uint256;
 
@@ -26,33 +29,23 @@ using SafeMath for uint256;
         _;
     }
 
+    // This modifier goes to the next stage
+    // after the function is done.
+
     function nextStage() internal {
         stage = Stages(uint(stage) + 1);
     }
 
-    // This modifier goes to the next stage
-    // after the function is done.
     modifier transitionNext()
     {
         _;
         nextStage();
     }
 
-    function setStageToRegistration() internal atStage(Stages.Preparation) transitionNext{
-        
-    }
-
-    function setStageToStarted() internal atStage(Stages.Registration) transitionNext{
-
-    }
-
-    function setStageToEnded()  internal atStage(Stages.Started) transitionNext{
-
-    }
-
-    function setStageToReview()  internal atStage(Stages.Ended) transitionNext{
-
-    }
+    function setStageToRegistration() internal atStage(Stages.Preparation) transitionNext{}
+    function setStageToStarted() internal atStage(Stages.Registration) transitionNext{}
+    function setStageToEnded()  internal atStage(Stages.Started) transitionNext{}
+    function setStageToReview()  internal atStage(Stages.Ended) transitionNext{}
 
 
     /*
@@ -106,7 +99,6 @@ using SafeMath for uint256;
     address public teacher;
     address public owner;
     string public className;
-
     uint256 public studentCount;
     uint256 public maxStudents = 2;
     uint256 public tuitionFee;
@@ -123,19 +115,16 @@ using SafeMath for uint256;
     }
     //The address of the student map to the structure
     mapping(address => Student) public studentInfo;
-
     event logSetTeacher(address teacherAddr);
 
 
     //Constructor 
     function Tuition() public{
-        owner = msg.sender;
-        
+        owner = msg.sender;  
     }
     
     function setClassName(string _className) public onlyTeacher notStopped atStage(Stages.Preparation) {
         className = _className;
-        
     }
     
     function setTeacher(address _teacher) public onlyAuthorized notStopped atStage(Stages.Preparation){
@@ -163,7 +152,6 @@ using SafeMath for uint256;
         setStageToReview();
     }
     
-    
     function() public payable {
     // this function enables the contract to receive funds
     }
@@ -184,12 +172,9 @@ using SafeMath for uint256;
       return result;
     }
 
-    
-
     modifier onlyTeacher{
         require(msg.sender == teacher, "Only Teacher");
         _;
-
     }
     
     function checkStudentExists(address student) public view returns(bool){
@@ -198,8 +183,6 @@ using SafeMath for uint256;
         }
         return false;
     }
-
-    event registerStudent(address student);
     
     function registerTuition(string _studentName) public payable notStopped atStage(Stages.Registration){
         require(msg.sender != teacher,"Teacher cannot be student");
@@ -210,8 +193,7 @@ using SafeMath for uint256;
         
         uint256 receivedAmt = msg.value;
         uint256 ethToReturn = SafeMinus(receivedAmt, tuitionFee);
-        
-        
+           
         //Store student into student array
         students.push(msg.sender);
         studentInfo[msg.sender].studentName = _studentName;
@@ -222,8 +204,7 @@ using SafeMath for uint256;
         
         if(ethToReturn > 0){
             msg.sender.transfer(ethToReturn);
-            ethToReturn = 0;
-            
+            ethToReturn = 0;    
         } 
         
         if(studentCount == maxStudents){
