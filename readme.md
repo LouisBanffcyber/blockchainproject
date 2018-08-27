@@ -1,11 +1,11 @@
 
-Project - ConsenSys 2018 Developer Program
+# Project - ConsenSys 2018 Developer Program
 
-What does the project do?
+## What does the project do?
 This project will serve as a proof of concept and to fulfill the requirements of the final project grading rubic.
 
 
-How to set it up?
+## How to set it up?
 
     Download From git - https://github.com/LouisBanffcyber/blockchainproject
 
@@ -26,7 +26,7 @@ How to set it up?
 
 Description: Tuition Smart Contract to help teachers and students manage class registration, payments and also serves as a record of grades. So the idea here is to have an official record of the tuition class, students, teacher and grades on the blockchain and also transparency of the tuition fee, grades and teacher rating. Also to facilitate the management of funds from the student to the teacher.
 
-User Stories
+## User Stories
 
 The roles and use cases for the tuition contract
 
@@ -41,7 +41,7 @@ The student can register for courses by entering a name and paying the tuition f
 
 
 
-Tuition Contract Stages
+## Tuition Contract Stages
 
 
     Preparation
@@ -69,12 +69,12 @@ Tuition Contract Stages
     3. Students can withdraw funds when contract is stopped - emergencyWithdraw()
 
 
-Notes
+## Notes
 
 I hardcoded the max students per tuition contract to 2. After two students have registered at the registration stage , the contract stage will automatically be transited to started
 
 
-Testing
+## Testing
 
 The test cases can be found in the test\testTuition.js
 
@@ -109,7 +109,7 @@ Contract: Tuition Contract
 There are some test cases like checking for repeated withdrawals, registering with ether less than the require tuition fee. 
 
 
-Front End Web App
+## Front End Web App
 
 Running npm run start should open the browser to localhost:3000
 
@@ -125,7 +125,7 @@ You should get the idea, login with different accounts and try the various funct
 
 *For the gradeStudent and giveTeacherRating functions are abit useless for now, I'm still figuring out how to display the studentInfo struct from the contract into react properly. But the test cases work! 
 
-For bonus points
+## For bonus points
 
 I have deployed my contract at
 
