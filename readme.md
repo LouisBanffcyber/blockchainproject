@@ -12,7 +12,7 @@ This project will serve as a proof of concept and to fulfill the requirements of
     npm install
 
     Setup ganache - Follow the instructions at https://truffleframework.com/docs/ganache/quickstart
-    (Configured truffle.js to port 7545)
+    (Configured truffle.js to port 8545)
     
     truffle compile
 
